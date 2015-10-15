@@ -12,7 +12,7 @@ $ npm install
 
 ## 在 think.js 1.x 中使用
 
-1. 配置支持用户tag，在 App/Conf/config.js 中设置 app_tag_on: true
+* 配置支持用户tag，在 App/Conf/config.js 中设置 app_tag_on: true
 
 ```js
 module.exports = {
@@ -22,7 +22,7 @@ module.exports = {
 };
 ```
 
-2. 编辑 App/Conf/tag.js 文件内容
+* 编辑 App/Conf/tag.js 文件内容
 
 ```js
 /**
@@ -43,7 +43,7 @@ module.exports = {
 };
 ```
 
-3. 增加对应的Controller和Action，默认为WechatController
+* 增加对应的Controller和Action，默认为WechatController
 
 ```js
 module.exports = Controller("Home/BaseController", function(){
@@ -63,7 +63,7 @@ module.exports = Controller("Home/BaseController", function(){
 
 ## 在 think.js 2.0 中使用
 
-1. 编辑 config/hook.js 增加一个 hook
+* 编辑 config/hook.js 增加一个 hook
 
 ```js
 export default {
@@ -71,7 +71,7 @@ export default {
 }
 ```
 
-2. 编辑 bootstrap/hook.js 加载 hook
+* 编辑 bootstrap/hook.js 加载 hook
 
 ```js
 var wechatMiddleware = require('think-wechat');
@@ -85,7 +85,7 @@ think.middleware('parse_wechat', wechatMiddleware({
     }));
 ```
 
-3. 增加对应的controller和action，默认为wechat
+* 增加对应的controller和action，默认为wechat
 
 ```js
 'use strict';
