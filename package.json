@@ -1,0 +1,48 @@
+{
+  "name": "think-wechat",
+  "description": "wechat middleware for both thinkjs 1.x & 2.0",
+  "version": "0.1.0",
+  "author": {
+    "name": "Akira Wu",
+    "email": "akira.cn@gmail.com",
+    "url": "https://github.com/akira-cn"
+  },
+  "contributors": [
+    {
+      "name": "Akira Wu",
+      "email": "akira.cn@gmail.com",
+      "url": "https://github.com/akira-cn"
+    }
+  ],
+  "keywords": [
+    "web",
+    "middleware",
+    "wechat",
+    "thinkjs"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/akira-cn/think-wechat"
+  },
+  "dependencies": {
+    "http-connect": "*",
+    "wechat": "*"
+  },
+  "devDependencies": {
+    
+  },
+  "license": "MIT",
+  "files": [
+    "LICENSE",
+    "Readme.md",
+    "index.js"
+  ],
+  "engines": {
+    "node": ">= 0.10.0"
+  },
+  "scripts": {
+    "test": "mocha --require test/support/env --reporter spec --bail --check-leaks test/",
+    "test-cov": "istanbul cover node_modules/mocha/bin/_mocha -- --require test/support/env --reporter dot --check-leaks test/",
+    "test-travis": "istanbul cover node_modules/mocha/bin/_mocha --report lcovonly -- --require test/support/env --reporter spec --check-leaks test/"
+  }
+}
