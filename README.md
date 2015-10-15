@@ -141,3 +141,7 @@ think.middleware('parse_wechat', wechatMiddleware({
         },
     }));
 ```
+
+## License
+
+[MIT](LICENSE)
