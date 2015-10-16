@@ -123,16 +123,16 @@ export default class extends Base {
 var wechatMiddleware = require('think-wechat');
 
 think.middleware('parse_wechat', wechatMiddleware({
-        pathname: '/wechat',    //默认，可配置为其他路径，与公众号对应的服务器URL设置一致
+        pathname: 'wechat',    //默认，可配置为其他路径，与公众号对应的服务器URL设置一致
         route: {
-          text: '/wechat/text', //文字转发
-          image: '/wechat/image', //图片转发
-          voice: '/wechat/voice', //语音转发
-          video: '/wechat/video', //视频转发
-          shortvideo: '/wechat/shortvideo', //小视频转发
-          location: '/wechat/location', //地理位置转发
-          link: '/wechat/link', //链接转发
-          event: '/wechat/event', //推送事件转发
+          text: 'wechat/text', //文字转发
+          image: 'wechat/image', //图片转发
+          voice: 'wechat/voice', //语音转发
+          video: 'wechat/video', //视频转发
+          shortvideo: 'wechat/shortvideo', //小视频转发
+          location: 'wechat/location', //地理位置转发
+          link: 'wechat/link', //链接转发
+          event: 'wechat/event', //推送事件转发
         },
         wechat:{
             token: '微信公众号token',
