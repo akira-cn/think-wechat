@@ -1,13 +1,14 @@
 module.exports = function(conf){
   return function(http){
     var self = this;
+    var route = '/' + (conf.pathname || 'wechat');
 
     return new Promise(function(resolve, reject){
       var connect = require('http-connect');
       var app = new connect(http);
       var wechat = require('wechat');
 
-      app.use('/wechat', function(req, res, next){
+      app.use(route, function(req, res, next){
           req.rawBody = http.payload;
           next();
       });
@@ -18,11 +19,15 @@ module.exports = function(conf){
           }else{
             http.post = message;
           }
-          http.pathname += '/' + path;
+          if(conf.route){
+            http.pathname = conf.route[path];
+          }else{
+            http.pathname += '/' + path;
+          }
           resolve();
       }
 
-      app.use('/wechat', wechat(conf.wechat)
+      app.use(route, wechat(conf.wechat)
         .text(function (message, req, res, next) {
           // message为文本内容
           // { ToUserName: 'gh_d3e07d51b513',
