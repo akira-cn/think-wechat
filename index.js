@@ -1,6 +1,27 @@
 module.exports = function(conf){
   return function(http){
     var self = this;
+
+    if(typeof conf === 'string'){
+      if(typeof think !== 'undefined' &&
+        typeof think.config === 'function'){
+        conf = think.config(conf);
+      }else if(typeof C !== 'undefined'){
+        conf = C(conf);
+      }else{
+        console.error('no wechat config');
+        return;
+      }
+    }
+
+    if(!conf.wechat){
+      conf.wechat = {
+        token: conf.token || '',
+        appid: conf.appid || '',
+        encodingAESKey: conf.encodingAESKey || ''
+      }
+    }
+
     var route = '/' + (conf.pathname || 'wechat');
 
     return new Promise(function(resolve, reject){
@@ -144,6 +165,7 @@ module.exports = function(conf){
         .middlewarify());
 
         app.use(function(){
+          console.log(route + '<>' + http.pathname);
           resolve();
         });     
     });
