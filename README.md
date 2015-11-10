@@ -5,9 +5,7 @@
 ## Getting start
 
 ```bash
-$ git clone https://github.com/akira-cn/think-wechat.git
-$ cd think-wechat
-$ npm install
+$ npm install think-wechat
 ```
 
 ## 在 think.js 1.x 中使用
