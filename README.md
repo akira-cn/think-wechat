@@ -1,6 +1,6 @@
 # Think-wechat
 
-微信中间件，同时支持 think.js 1.x 和 2.0，基于 [https://github.com/node-webot/wechat]
+微信中间件，同时支持 think.js 1.x 和 2.x，基于 [https://github.com/node-webot/wechat]
 
 ## Getting start
 
@@ -8,58 +8,7 @@
 $ npm install think-wechat
 ```
 
-## 在 think.js 1.x 中使用
-
-* 配置支持用户tag，在 App/Conf/config.js 中设置 app_tag_on: true
-
-```js
-module.exports = {
-  //配置项: 配置值
-  port: 8360, //监听的端口
-  app_tag_on: true
-};
-```
-
-* 编辑 App/Conf/tag.js 文件内容
-
-```js
-/**
- * 解析提交的json数据
- * @param  {[type]} http [description]
- * @return {[type]}      [description]
- */
-var wechatMiddleware = require('think-wechat'); 
-
-module.exports = {
-  form_parse: [false, wechatMiddleware({
-        wechat:{
-            token: '微信公众号token',
-            appid: '微信公众号ID',
-            encodingAESKey: '消息安全加密串'
-        },
-    })],
-};
-```
-
-* 增加对应的Controller和Action，默认为WechatController
-
-```js
-module.exports = Controller("Home/BaseController", function(){
-  "use strict";
-  return {
-    textAction: function(){
-      var message = this.post();
-      this.http.res.reply('消息接收成功！');
-    },
-    __call: function(action){
-      var message = this.post();
-      this.http.res.reply(JSON.stringify(message));
-    }
-  };
-});
-```
-
-## 在 think.js 2.0 中使用
+## 在 think.js 2.x 中使用
 
 * 编辑 config/hook.js 增加一个 hook
 
@@ -138,6 +87,57 @@ think.middleware('parse_wechat', wechatMiddleware({
             encodingAESKey: '消息安全加密串'
         },
     }));
+```
+
+## 在 think.js 1.x 中使用
+
+* 配置支持用户tag，在 App/Conf/config.js 中设置 app_tag_on: true
+
+```js
+module.exports = {
+  //配置项: 配置值
+  port: 8360, //监听的端口
+  app_tag_on: true
+};
+```
+
+* 编辑 App/Conf/tag.js 文件内容
+
+```js
+/**
+ * 解析提交的json数据
+ * @param  {[type]} http [description]
+ * @return {[type]}      [description]
+ */
+var wechatMiddleware = require('think-wechat'); 
+
+module.exports = {
+  form_parse: [false, wechatMiddleware({
+        wechat:{
+            token: '微信公众号token',
+            appid: '微信公众号ID',
+            encodingAESKey: '消息安全加密串'
+        },
+    })],
+};
+```
+
+* 增加对应的Controller和Action，默认为WechatController
+
+```js
+module.exports = Controller("Home/BaseController", function(){
+  "use strict";
+  return {
+    textAction: function(){
+      var message = this.post();
+      this.http.res.reply('消息接收成功！');
+    },
+    __call: function(action){
+      var message = this.post();
+      this.http.res.reply(JSON.stringify(message));
+    }
+  };
+});
 ```
 
 ## License
