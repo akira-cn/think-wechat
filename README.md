@@ -42,13 +42,17 @@ import Base from './base.js';
 const DEFULT_AUTO_REPLY = '功能正在开发中~';
 
 export default class extends Base {
-  reply(message){
-    this.http.res.reply(message);
-  }
   /**
    * index action
    * @return {Promise} []
    */
+  indexAction(){
+    let echostr = this.get('echostr');
+    return this.end(echostr);
+  }
+  reply(message){
+    this.http.res.reply(message);
+  }
   textAction(){
     var message = this.post();
     var msg = message.Content.trim();
@@ -62,6 +66,12 @@ export default class extends Base {
     this.reply(DEFULT_AUTO_REPLY);
   }
 }
+```
+
+* 登录你的微信服务号，将微信开发者的接口ULR配置为：
+
+```
+http://your_hostname/wechat
 ```
 
 ## 高级配置
@@ -128,6 +138,10 @@ module.exports = {
 module.exports = Controller("Home/BaseController", function(){
   "use strict";
   return {
+    indexAction: function(){
+      var echostr = this.get('echostr');
+      return this.end(echostr);
+    },
     textAction: function(){
       var message = this.post();
       this.http.res.reply('消息接收成功！');
