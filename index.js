@@ -30,22 +30,29 @@ module.exports = function(conf){
       var wechat = require('wechat');
 
       app.use(route, function(req, res, next){
+        if(http.getPayload){
+          http.getPayload().then(function(payload){
+            req.rawBody = payload;
+            next();
+          });
+        }else{
           req.rawBody = http.payload;
           next();
+        }
       });
 
       function forward(path, message){
-          if(typeof http.post === 'function'){
-            http._post = message;
-          }else{
-            http.post = message;
-          }
-          if(conf.route){
-            http.pathname = conf.route[path];
-          }else{
-            http.pathname += '/' + path;
-          }
-          resolve();
+        if(typeof http.post === 'function'){
+          http._post = message;
+        }else{
+          http.post = message;
+        }
+        if(conf.route){
+          http.pathname = conf.route[path];
+        }else{
+          http.pathname += '/' + path;
+        }
+        resolve();
       }
 
       app.use(route, wechat(conf.wechat)
