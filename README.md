@@ -68,7 +68,7 @@ export default class extends Base {
 }
 ```
 
-* 登录你的微信服务号，将微信开发者的接口ULR配置为：
+* 登录你的微信服务号，将微信开发者的接口URL配置为：
 
 ```
 http://your_hostname/wechat
