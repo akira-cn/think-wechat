@@ -1,6 +1,6 @@
 # Think-wechat
 
-微信中间件，同时支持 think.js 1.x 和 2.x，基于 [https://github.com/node-webot/wechat]
+微信中间件，基于 [node-webot/wechat](https://github.com/node-webot/wechat)，支持 [thinkJS 3.0](https://thinkjs.org/doc/3.0/index.html)
 
 ## Getting start
 
@@ -8,37 +8,41 @@
 $ npm install think-wechat
 ```
 
-## 在 think.js 2.x 中使用
+## 配置 middleware
 
-* 编辑 config/hook.js 增加一个 hook
+* 编辑 config/middleware.js 
 
 ```js
-export default {
-  payload_parse: ['prepend', 'parse_wechat'], //在前面追加解析 xml
-}
+const path = require('path');
+const wechat = require('think-wechat')
+const isDev = think.env === 'development';
+
+module.exports = [
+  [...]
+  {
+    handle: wechat,
+    match: '/wechat',
+    options: {
+      token: <微信开发者token>,
+      appid: <appID>,
+      encodingAESKey: <消息对称加密串>,
+      checkSignature: true // 可选，默认为true。由于微信公众平台接口调试工具在明文模式下不发送签名，所以如要使用该测试工具，请将其设置为false
+    }
+  },
+  {
+    handle: 'payload',
+    options: {}
+  },
+  [...]
+];
 ```
 
-* 编辑 bootstrap/hook.js 加载 hook
+**注意**：think-wechat 必须要在 payload 中间件前面加载，它会代替 payload 处理微信发过来的 post 请求中的数据。 
+
+* 根据 match 配置，增加对应的 controller 和 action
 
 ```js
-var wechatMiddleware = require('think-wechat');
-
-think.middleware('parse_wechat', wechatMiddleware({
-        wechat:{
-            token: '微信公众号token',
-            appid: '微信公众号ID',
-            encodingAESKey: '消息安全加密串'
-        },
-    }));
-```
-
-* 增加对应的controller和action，默认为wechat
-
-```js
-'use strict';
-
-import Base from './base.js';
-
+const Base = require('./base.js');
 const DEFULT_AUTO_REPLY = '功能正在开发中~';
 
 export default class extends Base {
@@ -47,23 +51,43 @@ export default class extends Base {
    * @return {Promise} []
    */
   indexAction(){
-    let echostr = this.get('echostr');
+  	//验证开发者服务器
+  	//这里只是演示，所以没做签名校验，实际上应该要根据微信要求进行签名校验
+    const echostr = this.get('echostr');
     return this.end(echostr);
   }
-  reply(message){
-    this.http.res.reply(message);
-  }
   textAction(){
-    var message = this.post();
-    var msg = message.Content.trim();
-    this.reply('测试成功:'+msg);
+  	//发送文本消息
+    const {Content} = this.post();    
+    this.success('你发送给我的是:' + Content.trim());
+  }
+  async musicAction(){
+  	const {Content} = this.post();
+  	const music = await myService.search(Content.trim());
+  	
+  	if(music){
+  		const {title, description, url} = music;
+  		this.success({
+  			type: 'music',
+        	content: {
+	        title,
+	        description,
+	        musicUrl: url,
+	        hqMusicUrl: url,
+	        thumbMediaId: "thisThumbMediaId"
+	      }			
+  		});
+  	}else{
+  		this.fail('你所找的歌曲不存在');
+  	}
   }
   eventAction(){
-    var message = this.post();
-    this.reply(JSON.stringify(message));
+    const message = this.post();
+    
+    this.success(JSON.stringify(message));
   }
   __call(){
-    this.reply(DEFULT_AUTO_REPLY);
+    this.success(DEFULT_AUTO_REPLY);
   }
 }
 ```
@@ -74,85 +98,7 @@ export default class extends Base {
 http://your_hostname/wechat
 ```
 
-## 高级配置
-
-```js
-var wechatMiddleware = require('think-wechat');
-
-think.middleware('parse_wechat', wechatMiddleware({
-        pathname: 'wechat',    //默认，可配置为其他路径，与公众号对应的服务器URL设置一致
-        route: {
-          text: 'wechat/text', //文字转发
-          image: 'wechat/image', //图片转发
-          voice: 'wechat/voice', //语音转发
-          video: 'wechat/video', //视频转发
-          shortvideo: 'wechat/shortvideo', //小视频转发
-          location: 'wechat/location', //地理位置转发
-          link: 'wechat/link', //链接转发
-          event: 'wechat/event', //推送事件转发
-        },
-        wechat:{
-            token: '微信公众号token',
-            appid: '微信公众号ID',
-            encodingAESKey: '消息安全加密串'
-        },
-    }));
-```
-
-## 在 think.js 1.x 中使用
-
-* 配置支持用户tag，在 App/Conf/config.js 中设置 app_tag_on: true
-
-```js
-module.exports = {
-  //配置项: 配置值
-  port: 8360, //监听的端口
-  app_tag_on: true
-};
-```
-
-* 编辑 App/Conf/tag.js 文件内容
-
-```js
-/**
- * 解析提交的json数据
- * @param  {[type]} http [description]
- * @return {[type]}      [description]
- */
-var wechatMiddleware = require('think-wechat'); 
-
-module.exports = {
-  form_parse: [false, wechatMiddleware({
-        wechat:{
-            token: '微信公众号token',
-            appid: '微信公众号ID',
-            encodingAESKey: '消息安全加密串'
-        },
-    })],
-};
-```
-
-* 增加对应的Controller和Action，默认为WechatController
-
-```js
-module.exports = Controller("Home/BaseController", function(){
-  "use strict";
-  return {
-    indexAction: function(){
-      var echostr = this.get('echostr');
-      return this.end(echostr);
-    },
-    textAction: function(){
-      var message = this.post();
-      this.http.res.reply('消息接收成功！');
-    },
-    __call: function(action){
-      var message = this.post();
-      this.http.res.reply(JSON.stringify(message));
-    }
-  };
-});
-```
+this.success 支持返回所有 [node-webot/wechat](https://github.com/node-webot/wechat) 支持的格式。
 
 ## License
 

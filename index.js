@@ -1,62 +1,39 @@
-module.exports = function(conf){
-  return function(http){
-    var self = this;
+const wechat = require('wechat');
+const connect = require('http-connect');
 
-    if(typeof conf === 'string'){
-      if(typeof think !== 'undefined' &&
-        typeof think.config === 'function'){
-        conf = think.config(conf);
-      }else if(typeof C !== 'undefined'){
-        conf = C(conf);
-      }else{
-        console.error('no wechat config');
-        return;
-      }
-    }
+const defaultOptions = {
+  
+};
 
-    if(!conf.wechat){
-      conf.wechat = {
-        token: conf.token || '',
-        appid: conf.appid || '',
-        encodingAESKey: conf.encodingAESKey || ''
-      }
-    }
+module.exports = (options = {}, app) => {
+  // 合并传递进来的配置
+  options = Object.assign({}, defaultOptions, options);
+  return (ctx, next) => {
+    const _app = new connect({req: ctx.req, res: ctx.res, pathname: ctx.path});
 
-    var route = '/' + (conf.pathname || 'wechat');
-
-    return new Promise(function(resolve, reject){
-      var connect = require('http-connect');
-      var app = new connect(http);
-      var wechat = require('wechat');
-
-      app.use(route, function(req, res, next){
-        if(http.getPayload){
-          http.getPayload().then(function(payload){
-            req.rawBody = payload;
-            next();
-          });
-        }else{
-          req.rawBody = http.payload;
-          next();
-        }
-      });
+    return new Promise((resolve, reject) => {
 
       function forward(path, message){
-        if(typeof http.post === 'function'){
-          http._post = message;
-        }else{
-          http.post = message;
-        }
-        if(conf.route){
-          http.pathname = conf.route[path];
-        }else{
-          http.pathname += '/' + path;
-        }
+        ctx.path += '/' + path;
+        ctx.request.body = {post: message};
         resolve();
       }
 
-      app.use(route, wechat(conf.wechat)
-        .text(function (message, req, res, next) {
+      _app.use(function(req, res, next){
+        const _responsed = res.end;
+        
+        res.end = function(...args){
+          if(app.think.env === 'development'){
+            const logger = app.think.logger;
+            logger.info('REPLY', ...args);
+          }
+          return _responsed.apply(res, args);
+        };
+        
+        next();
+      })
+
+      _app.use(wechat(options).text(function (message, req, res, next) {
           // message为文本内容
           // { ToUserName: 'gh_d3e07d51b513',
           // FromUserName: 'oPKu7jgOibOA-De4u8J2RuNKpZRw',
@@ -170,11 +147,14 @@ module.exports = function(conf){
           forward('deviceEvent', message);
         })
         .middlewarify());
-
-        app.use(function(){
-          console.log(route + '<>' + http.pathname);
-          resolve();
-        });     
+    })
+    .then(() => next())
+    .then(() => {
+      const body = ctx.body;
+      if (body) {
+        ctx.respond = false;
+        ctx.res.reply(body.errmsg || body.data);
+      }
     });
   }
 }
