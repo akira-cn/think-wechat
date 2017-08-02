@@ -41,6 +41,8 @@ module.exports = [
 
 * 根据 match 配置，增加对应的 controller 和 action
 
+支持的 action 包括：textAction、imageAction、voiceAction、videoAction、shortvideoAction、locationAction、linkAction、eventAction、deviceTextAction、deviceEventAction。
+
 ```js
 const Base = require('./base.js');
 const DEFULT_AUTO_REPLY = '功能正在开发中~';

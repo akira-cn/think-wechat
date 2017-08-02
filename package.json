@@ -1,7 +1,7 @@
 {
   "name": "think-wechat",
   "description": "wechat middleware for thinkjs 3.0",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": {
     "name": "Akira Wu",
     "email": "akira.cn@gmail.com",
