@@ -51,17 +51,17 @@ export default class extends Base {
    * @return {Promise} []
    */
   indexAction(){
-    //验证开发者服务器
-    //这里只是演示，所以没做签名校验，实际上应该要根据微信要求进行签名校验
+    // 验证开发者服务器
+    // 这里只是演示，所以没做签名校验，实际上应该要根据微信要求进行签名校验
     const echostr = this.get('echostr');
     return this.end(echostr);
   }
-  textAction(){
-    //发送文本消息
-    const {Content} = this.post();    
-    this.success('你发送给我的是:' + Content.trim());
-  }
-  async musicAction(){
+  // textAction(){
+      // 发送文本消息
+  //  const {Content} = this.post();    
+  //  this.success('你发送给我的是:' + Content.trim());
+  // }
+  async textAction(){
   	const {Content} = this.post();
   	const music = await myService.search(Content.trim());
   	
