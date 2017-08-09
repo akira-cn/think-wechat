@@ -1,4 +1,3 @@
-const wechat = require('wechat');
 const connect = require('http-connect');
 
 const defaultOptions = {
@@ -6,9 +5,34 @@ const defaultOptions = {
 };
 
 module.exports = (options = {}, app) => {
+  let wechat;
+
+  const isMock = options.mock; //提供模拟，方便测试
+
+  if(isMock){
+    wechat = require('./mock');
+  } else {
+    wechat = require('wechat');
+  }
+
   // 合并传递进来的配置
   options = Object.assign({}, defaultOptions, options);
+
   return (ctx, next) => {
+    if(isMock){
+      app = {};
+      const Logger = require('think-logger3');
+      app.think = {logger: new Logger({handle: Logger.Console}), env: 'development'};
+      ctx.res.reply = function(message){
+        ctx.body = {reply: message, path: ctx.path}
+        ctx.respond = true
+      }
+    }
+
+    if(ctx.request.body){
+      ctx.req.rawBody = ctx.request.body
+    }
+
     const _app = new connect({req: ctx.req, res: ctx.res, pathname: ctx.path});
 
     return new Promise((resolve, reject) => {
@@ -31,7 +55,7 @@ module.exports = (options = {}, app) => {
         };
         
         next();
-      })
+      });
 
       _app.use(wechat(options).text(function (message, req, res, next) {
           // message为文本内容

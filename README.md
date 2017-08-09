@@ -1,5 +1,10 @@
 # Think-wechat
 
+[![npm status](https://img.shields.io/npm/v/think-wechat.svg)](https://www.npmjs.org/package/think-wechat)
+[![build status](https://api.travis-ci.org/akira-cn/think-wechat.svg?branch=master)](https://travis-ci.org/akira-cn/think-wechat) 
+[![dependency status](https://david-dm.org/akira-cn/think-wechat.svg)](https://david-dm.org/akira-cn/think-wechat)
+[![coverage status](https://img.shields.io/coveralls/akira-cn/think-wechat.svg)](https://coveralls.io/github/akira-cn/think-wechat)
+
 微信中间件，基于 [node-webot/wechat](https://github.com/node-webot/wechat)，支持 [thinkJS 3.0](https://thinkjs.org/doc/3.0/index.html)
 
 ## Getting start
